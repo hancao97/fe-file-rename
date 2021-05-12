@@ -17,7 +17,7 @@
 		"commands": [
 			{
 				"command": "fe-file-rename.checkName",
-				"title": "前端项目命名规范检查"
+				"title": "初始化前端目录"
 			},
 			{
 				"command": "fe-file-rename.refresh",
