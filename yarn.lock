@@ -1028,10 +1028,10 @@ fastq@^1.6.0:
   dependencies:
     reusify "^1.0.4"
 
-fe-mv@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/fe-mv/-/fe-mv-1.0.1.tgz#a84f859ba70db74662c4eac2a0267780c351212f"
-  integrity sha512-jj2VpVwtfRItJRcsIqzRmnLkZoXW5qv/sakY8dCcByYgrpANii7k7jnCJaDkGZpsEPYeJc4hLy972DJoy47OZg==
+fe-mv@1.0.3:
+  version "1.0.3"
+  resolved "https://registry.npmjs.org/fe-mv/-/fe-mv-1.0.3.tgz#a92aec0c493e00a0ced5ad0530fa84071375a8ff"
+  integrity sha512-eu8RkYLsP08v/QV6iSfAkmxG8wrmPmrq041e5tuiu/3B3RHnHz8Vsc21mStW3KyX1AAx5Ap9i/IoeoasAU3V+A==
   dependencies:
     "@oclif/command" "^1"
     "@oclif/config" "^1"

@@ -107,7 +107,7 @@
 		"webpack-cli": "^4.4.0"
 	},
 	"dependencies": {
-		"fe-mv": "^1.0.1",
+		"fe-mv": "1.0.3",
 		"lodash": "^4.17.21"
 	}
 }

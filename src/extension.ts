@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { changeReference } from 'fe-mv/lib/move';
+import { changeReferenceSync } from 'fe-mv/lib/move';
 import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, getSwitchType } from './handlers/handlers';
 import { SWITCH_TYPE, DEFAULT_TYPES } from './configs/configs';
 
@@ -51,11 +51,10 @@ export function activate(context: vscode.ExtensionContext) {
 		let path = require('path');
 		let fs = require('fs');
 		let errorList = [];
-		const rootDirName = path.basename(projectRootPath);
 		for(let file of fileMap.values()){
 			if(file.error){
 				errorList.push({
-					label:	`【${file.type}】${file.name}【${rootDirName + file.path.replace(projectRootPath,'')}】`,
+					label:	`【${file.type}】${file.name}【${file.path.replace(projectRootPath,'')}】`,
 					type: file.type,
 					path: file.path,
 					name: file.name
@@ -83,7 +82,8 @@ export function activate(context: vscode.ExtensionContext) {
 		for(const operateItem of operator) {
 			const normativeName = formatFileName(operateItem.name, operateItem.type, operateItem.type === 'dir' ? currentTypes[0] : currentTypes[1]);
 			const newPath = path.join(operateItem.path, '..', normativeName);
-			changeReference(operateItem.path, newPath, projectRootPath);
+			console.log(operateItem.path, newPath, projectRootPath);
+			changeReferenceSync(operateItem.path, newPath, projectRootPath);
 			fs.renameSync(operateItem.path, newPath);
 		}
 		fileMap = showProjectTree(projectRootPath, currentTypes);
