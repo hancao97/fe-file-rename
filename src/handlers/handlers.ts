@@ -1,4 +1,4 @@
-import { EXCLUDE_DIR_NAME, EXCLUDE_FILE_NAME } from '../configs/configs';
+import { EXCLUDE_DIR_NAME, EXCLUDE_FILE_NAME, SWITCH_TYPE } from '../configs/configs';
 import { TreeViewProvider } from '../tree-view-provider';
 import * as vscode from 'vscode';
 import { TYPE_MAP, TYPE_REGEXP_MAP } from '../configs/configs';
@@ -78,6 +78,15 @@ const lodashFormat = (str:string, rule:string) => {
   }
 };
 
+export const getSwitchType = (type: string) => {
+  const switchType = SWITCH_TYPE.slice();
+  if(type === 'file'){
+    return switchType;
+  }
+  switchType.pop();
+  return switchType;
+};
+
 export const getProjectDir = (filePath: any):string => {
   let path = require('path');
   let fs = require('fs');
@@ -155,17 +164,18 @@ export const formatFileName = (fileName:string, type:string, rule:string) => {
     }
   }
 };
-export const checkOperable = (oldSource:string, newFileName:string) => {
-  let path = require('path');
-  let fs = require('fs');
-  let fileStats = fs.statSync(oldSource);
-  const isFile = !fileStats.isDirectory();
-  const isDifferent = path.basename(oldSource).toLowerCase() !== newFileName.toLowerCase;
-  if(isFile || isDifferent) {
-    return true;
-  }
-  return false;
-};
+
+// export const checkOperable = (oldSource:string, newFileName:string) => {
+//   let path = require('path');
+//   let fs = require('fs');
+//   let fileStats = fs.statSync(oldSource);
+//   const isFile = !fileStats.isDirectory();
+//   const isDifferent = path.basename(oldSource).toLowerCase() !== newFileName.toLowerCase;
+//   if(isFile || isDifferent) {
+//     return true;
+//   }
+//   return false;
+// };
 
 
 //TODO:注释信息丢弃处

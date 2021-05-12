@@ -2,7 +2,6 @@ import { TreeItem, TreeItemCollapsibleState, TreeDataProvider, Uri, window, Even
 import * as vscode from 'vscode';
 import { join } from 'path';
 import { ITEM_ICON_MAP } from './configs/configs';
-import { types } from 'node:util';
 
 export class TreeItemNode extends TreeItem {
     public path:string;

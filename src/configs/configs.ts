@@ -31,6 +31,14 @@ export const ITEM_ICON_MAP = new Map<string, string>([
 
 export const SWITCH_TYPE:Array<any> = [
     {
+        label: '连接线',
+        key: 'ConnectingLine'
+    },
+    {
+        label: '下划线',
+        key: 'UnderLine'
+    },
+    {
         label: '小驼峰',
         key: 'LowerCamelCase'
     },
@@ -38,21 +46,13 @@ export const SWITCH_TYPE:Array<any> = [
         label: '大驼峰',
         key: 'UpperCamelCase'
     },
-    {
-        label: '连接线',
-        key: 'ConnectingLine'
-    },
-    {
-        label: '下划线',
-        key: 'UnderLine'
-    }
 ];
 
 export const TYPE_MAP = new Map([
-    ['LowerCamelCase','小驼峰'],
-    ['UpperCamelCase','大驼峰'],
     ['ConnectingLine','连接线'],
     ['UnderLine','下划线'],
+    ['LowerCamelCase','小驼峰'],
+    ['UpperCamelCase','大驼峰']
 ]);
 
 export const DEFAULT_TYPES = ['ConnectingLine', 'ConnectingLine'];

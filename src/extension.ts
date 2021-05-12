@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { changeReference } from 'fe-mv/lib/move';
-import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, checkOperable } from './handlers/handlers';
+import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, getSwitchType } from './handlers/handlers';
 import { SWITCH_TYPE, DEFAULT_TYPES } from './configs/configs';
 
 export function activate(context: vscode.ExtensionContext) {
@@ -23,13 +23,13 @@ export function activate(context: vscode.ExtensionContext) {
 
 	let switchType = vscode.commands.registerCommand('fe-file-rename.switchCheckType', async () => {
 		let optTemp:Array<any> = [];
-		let operator = await vscode.window.showQuickPick(SWITCH_TYPE,{
+		let operator = await vscode.window.showQuickPick(getSwitchType('dir'),{
 			canPickMany: false,
-        	placeHolder: '请选择文件夹校验规则'
+        	placeHolder: '请选择文件夹校验规则【文件名建议只使用小写字母，现不支持大驼峰】'
 		});
 		if( operator) {
 			optTemp = [operator.key];
-			operator = await vscode.window.showQuickPick(SWITCH_TYPE, {
+			operator = await vscode.window.showQuickPick(getSwitchType('file'), {
 				canPickMany: false,
 				placeHolder: '请选择文件校验规则'
 			});
@@ -83,19 +83,8 @@ export function activate(context: vscode.ExtensionContext) {
 		for(const operateItem of operator) {
 			const normativeName = formatFileName(operateItem.name, operateItem.type, operateItem.type === 'dir' ? currentTypes[0] : currentTypes[1]);
 			const newPath = path.join(operateItem.path, '..', normativeName);
-			const operable = checkOperable(operateItem.path, normativeName);
-			if( operable ){
-				changeReference(operateItem.path, newPath, projectRootPath);
-				fs.renameSync(operateItem.path, newPath);	
-			} else {
-				//避开文件系统引起的无法重命名问题
-				const transitionName = 'transitionNameFeFileRename' + normativeName;
-				const transitionPath = path.join(operateItem.path, '..', transitionName);
-				changeReference(operateItem.path, transitionPath, projectRootPath);
-				fs.renameSync(operateItem.path, transitionPath);
-				changeReference(transitionPath, newPath, projectRootPath);
-				fs.renameSync(transitionPath, newPath);
-			}
+			changeReference(operateItem.path, newPath, projectRootPath);
+			fs.renameSync(operateItem.path, newPath);
 		}
 		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
