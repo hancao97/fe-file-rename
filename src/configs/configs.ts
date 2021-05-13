@@ -58,8 +58,8 @@ export const TYPE_MAP = new Map([
 export const DEFAULT_TYPES = ['ConnectingLine', 'ConnectingLine'];
 
 export const TYPE_REGEXP_MAP = new Map<string, any>([
-    ['LowerCamelCase', /^(_?)[a-z][A-Za-z0-9]*\1$/],
-    ['UpperCamelCase', /^(_?)[A-Z][A-Za-z0-9]*\1$/],
-    ['ConnectingLine', /^(_?)[a-z][a-z0-9-]*[a-z0-9]\1$/],
-    ['UnderLine', /^(_?)[a-z][a-z0-9_]*[a-z0-9]\1$/],
+    ['LowerCamelCase', /^(_?)[a-z0-9][A-Za-z0-9]*\1$/],
+    ['UpperCamelCase', /^(_?)[A-Z0-9][A-Za-z0-9]*\1$/],
+    ['ConnectingLine', /^(_?)[a-z0-9][a-z0-9-]*[a-z0-9]\1$/],
+    ['UnderLine', /^(_?)[a-z0-9][a-z0-9_]*[a-z0-9]\1$/],
 ]);

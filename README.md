@@ -15,5 +15,5 @@ ts/node/vscode extension树视图
 这里推荐小写文件名，可以去查看 阮一峰的《为什么文件名要小写》文章 https://www.ruanyifeng.com/blog/2017/02/filename-should-be-lowercase.html  
 其实是出于 **可移植性**，**易用性**，**易读性**， **便捷性** 考量  
 于是这里考虑以上特性并避免文件系统不支持变动引起的bug, 不提供 文件夹的**大驼峰**转换能力。
-## 说点什么
-加油加油冲冲冲~
+## 修改引用
+fe-mv: https://github.com/MwumLi/fe-mv 
