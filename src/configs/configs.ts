@@ -12,6 +12,10 @@ export const EXCLUDE_DIR_NAME:Array<string> = [
     'test'
 ];
 
+export const CAN_NOT_CHANGE_DIR = [
+    'src'
+];
+
 export const EXCLUDE_FILE_NAME:Array<string> = [
     'json',
     'yaml',

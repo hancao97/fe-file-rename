@@ -1,4 +1,4 @@
-import { EXCLUDE_DIR_NAME, EXCLUDE_FILE_NAME, SWITCH_TYPE } from '../configs/configs';
+import { EXCLUDE_DIR_NAME, EXCLUDE_FILE_NAME, SWITCH_TYPE, CAN_NOT_CHANGE_DIR } from '../configs/configs';
 import { TreeViewProvider } from '../tree-view-provider';
 import * as vscode from 'vscode';
 import { TYPE_MAP, TYPE_REGEXP_MAP } from '../configs/configs';
@@ -79,12 +79,9 @@ const lodashFormat = (str:string, rule:string) => {
 };
 
 export const getSwitchType = (type: string) => {
+  // 可以考虑根据类型不同给不同的转换规则与校验能力
   const switchType = SWITCH_TYPE.slice();
-  if(type === 'file'){
-    return switchType;
-  }
-  switchType.pop();
-  return switchType;
+  return switchType; 
 };
 
 export const getProjectDir = (filePath: any):string => {
@@ -132,8 +129,8 @@ export const getFileMap = (projectFileTree:any, types:any, map?:any) => {
   let fileMap = map? map : new Map();
   for(const item of projectFileTree){
     const isErrorFile = item.type === 'file' && !fileReg.test(item.name.split('.')[0]);
-    // 根节点不让改名
-    const isErrorDir = item.type === 'dir' && !dirReg.test(item.name) && !isRoot;
+    // 根节点不让改名 src不让改名
+    const isErrorDir = item.type === 'dir' && !dirReg.test(item.name) && !isRoot && !CAN_NOT_CHANGE_DIR.includes(item.name);
     if(isErrorFile || isErrorDir){
       item.error = true;
     }
@@ -165,17 +162,16 @@ export const formatFileName = (fileName:string, type:string, rule:string) => {
   }
 };
 
-// export const checkOperable = (oldSource:string, newFileName:string) => {
-//   let path = require('path');
-//   let fs = require('fs');
-//   let fileStats = fs.statSync(oldSource);
-//   const isFile = !fileStats.isDirectory();
-//   const isDifferent = path.basename(oldSource).toLowerCase() !== newFileName.toLowerCase;
-//   if(isFile || isDifferent) {
-//     return true;
-//   }
-//   return false;
-// };
+export const checkOperable = (oldSource:string, newSource:string) => {
+  let fs = require('fs');
+  let fileStats = fs.statSync(oldSource);
+  const isFile = !fileStats.isDirectory();
+  const isDifferent = oldSource.toLowerCase() !== newSource.toLowerCase();
+  if(isFile || isDifferent) {
+    return true;
+  }
+  return false;
+};
 
 
 //TODO:注释信息丢弃处

@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { changeReferenceSync } from 'fe-mv/lib/move';
-import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, getSwitchType } from './handlers/handlers';
-import { SWITCH_TYPE, DEFAULT_TYPES } from './configs/configs';
+import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, getSwitchType, checkOperable } from './handlers/handlers';
+import { DEFAULT_TYPES } from './configs/configs';
 
 export function activate(context: vscode.ExtensionContext) {
 	let currentTypes:Array<any> = DEFAULT_TYPES;
@@ -11,21 +11,44 @@ export function activate(context: vscode.ExtensionContext) {
 		showTypeMessage(currentTypes);
 		fileMap = showProjectTree(projectRootPath, currentTypes);
 	};
+	const onWillRenameFiles: vscode.Event<vscode.FileWillRenameEvent> = vscode.workspace.onWillRenameFiles;
+	const watcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*", false, false, false);
+	watcher.onDidChange((uri: vscode.Uri) => {
+		// 更新文件视图
+		fileMap = showProjectTree(projectRootPath, currentTypes);
+	});
+	onWillRenameFiles(async ({ files }) => {
+		const path = require('path');
+		if(files.length !== 1) { //单文件拖拽，避免引用修改错误
+			vscode.window.showErrorMessage('一次仅操作一个文件时可以使用本工具进行引用修改~');
+			return;
+		}
+		const oldPath = path.normalize(files[0].oldUri.fsPath);
+		const newPath = path.normalize(files[0].newUri.fsPath);
+		const operable = checkOperable(oldPath, newPath);
+		if( operable ){
+			changeReferenceSync(oldPath, newPath, projectRootPath);
+		} else {
+			const tempNamePath = path.join(oldPath, '..', 'feFileRenameTempNamePath' + path.basename(newPath));;
+			changeReferenceSync(oldPath, tempNamePath, projectRootPath);
+			changeReferenceSync(tempNamePath, newPath, projectRootPath);
+		}
+	});
 
-	let checkName = vscode.commands.registerCommand('fe-file-rename.checkName',(params) => {
+	const init = vscode.commands.registerCommand('fe-file-rename.init',(params) => {
 		projectRootPath = getProjectDir(params.fsPath);
 		showMessageAndRefreshTree();
 	});
 
-	let refresh = vscode.commands.registerCommand('fe-file-rename.refresh',() => {
+	const refresh = vscode.commands.registerCommand('fe-file-rename.refresh',() => {
 		showMessageAndRefreshTree();
 	});
 
-	let switchType = vscode.commands.registerCommand('fe-file-rename.switchCheckType', async () => {
+	const switchType = vscode.commands.registerCommand('fe-file-rename.switchCheckType', async () => {
 		let optTemp:Array<any> = [];
 		let operator = await vscode.window.showQuickPick(getSwitchType('dir'),{
 			canPickMany: false,
-        	placeHolder: '请选择文件夹校验规则【文件名建议只使用小写字母，现不支持大驼峰】'
+        	placeHolder: '请选择文件夹校验规则'
 		});
 		if( operator) {
 			optTemp = [operator.key];
@@ -47,7 +70,7 @@ export function activate(context: vscode.ExtensionContext) {
 		showMessageAndRefreshTree();
 	});
 
-	let batchOp = vscode.commands.registerCommand('fe-file-rename.batchOp', async () => {
+	const batchOp = vscode.commands.registerCommand('fe-file-rename.batchOp', async () => {
 		let path = require('path');
 		let fs = require('fs');
 		let errorList = [];
@@ -82,13 +105,21 @@ export function activate(context: vscode.ExtensionContext) {
 		for(const operateItem of operator) {
 			const normativeName = formatFileName(operateItem.name, operateItem.type, operateItem.type === 'dir' ? currentTypes[0] : currentTypes[1]);
 			const newPath = path.join(operateItem.path, '..', normativeName);
-			console.log(operateItem.path, newPath, projectRootPath);
-			changeReferenceSync(operateItem.path, newPath, projectRootPath);
-			fs.renameSync(operateItem.path, newPath);
+			const operable = checkOperable(operateItem.path, newPath);
+			if( operable ){
+				changeReferenceSync(operateItem.path, newPath, projectRootPath);
+				fs.renameSync(operateItem.path, newPath);
+			} else {
+				const tempNamePath = path.join(operateItem.path, '..', 'feFileRenameTempNamePath' + normativeName);;
+				changeReferenceSync(operateItem.path, tempNamePath, projectRootPath);
+				fs.renameSync(operateItem.path, tempNamePath);
+				changeReferenceSync(tempNamePath, newPath, projectRootPath);
+				fs.renameSync(tempNamePath, newPath);
+			}
 		}
 		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
-	context.subscriptions.push(...[checkName, switchType, batchOp, refresh]);
+	context.subscriptions.push(...[init, switchType, batchOp, refresh]);
 }
 
 export function deactivate() {}

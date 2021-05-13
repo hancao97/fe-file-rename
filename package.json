@@ -10,13 +10,13 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:fe-file-rename.checkName"
+		"onCommand:fe-file-rename.init"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "fe-file-rename.checkName",
+				"command": "fe-file-rename.init",
 				"title": "初始化前端目录"
 			},
 			{
@@ -38,7 +38,7 @@
 		"menus": {
 			"explorer/context": [
 				{
-					"command": "fe-file-rename.checkName",
+					"command": "fe-file-rename.init",
 					"when": "filesExplorerFocus",
 					"group": "navigation"
 				}
