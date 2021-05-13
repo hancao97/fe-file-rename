@@ -25,6 +25,11 @@
 				"icon": "resources/refresh.svg"
 			},
 			{
+				"command": "fe-file-rename.switchOnOff",
+				"title": "引用修改开关",
+				"icon": "resources/on-off.svg"
+			},
+			{
 				"command": "fe-file-rename.switchCheckType",
 				"title": "切换检查规则",
 				"icon": "resources/switch.svg"
@@ -50,14 +55,19 @@
 					"group": "navigation@1"
 				},
 				{
-					"command": "fe-file-rename.switchCheckType",
+					"command": "fe-file-rename.switchOnOff",
 					"when": "isProjectTreeInit && view == feProjectTree-main",
 					"group": "navigation@2"
 				},
 				{
-					"command": "fe-file-rename.batchOp",
+					"command": "fe-file-rename.switchCheckType",
 					"when": "isProjectTreeInit && view == feProjectTree-main",
 					"group": "navigation@3"
+				},
+				{
+					"command": "fe-file-rename.batchOp",
+					"when": "isProjectTreeInit && view == feProjectTree-main",
+					"group": "navigation@4"
 				}
 			]
 		},

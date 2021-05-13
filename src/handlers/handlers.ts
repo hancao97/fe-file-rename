@@ -118,8 +118,15 @@ export const showProjectTree = (projectRootPath:any, currentTypes:any, ) => {
 };
 
 export const showTypeMessage = (currentTypes:Array<any>) => {
-  vscode.window.showInformationMessage(`文件夹名称校验规则为：${TYPE_MAP.get(currentTypes[0])}`);
-  vscode.window.showInformationMessage(`文件名称校验规则为：${TYPE_MAP.get(currentTypes[1])}`);
+  vscode.window.showInformationMessage(`校验规则为：${TYPE_MAP.get(currentTypes[0])}(文件夹)/${TYPE_MAP.get(currentTypes[1])}(文件)`);
+};
+
+export const showOnOffMessage = (isAutoReference:boolean) => {
+  if(isAutoReference){
+    vscode.window.showInformationMessage('已开启自动修改引用');
+  }else{
+    vscode.window.showErrorMessage('已关闭自动修改引用');
+  }
 };
 
 export const getFileMap = (projectFileTree:any, types:any, map?:any) => {

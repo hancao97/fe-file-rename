@@ -1,23 +1,23 @@
 import * as vscode from 'vscode';
 import { changeReferenceSync } from 'fe-mv/lib/move';
-import { getProjectDir, showProjectTree, showTypeMessage, formatFileName, getSwitchType, checkOperable } from './handlers/handlers';
+import { getProjectDir, showProjectTree, showTypeMessage, showOnOffMessage, formatFileName, getSwitchType, checkOperable } from './handlers/handlers';
 import { DEFAULT_TYPES } from './configs/configs';
 
 export function activate(context: vscode.ExtensionContext) {
 	let currentTypes:Array<any> = DEFAULT_TYPES;
 	let projectRootPath = '';
 	let fileMap = new Map();
-	let showMessageAndRefreshTree = () => {
-		showTypeMessage(currentTypes);
-		fileMap = showProjectTree(projectRootPath, currentTypes);
-	};
+	let isAutoReference = false;
 	const onWillRenameFiles: vscode.Event<vscode.FileWillRenameEvent> = vscode.workspace.onWillRenameFiles;
 	const watcher: vscode.FileSystemWatcher = vscode.workspace.createFileSystemWatcher("**/*", false, false, false);
-	watcher.onDidChange((uri: vscode.Uri) => {
+	watcher.onDidChange(() => {
 		// 更新文件视图
 		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
 	onWillRenameFiles(async ({ files }) => {
+		if(!isAutoReference){
+			return;
+		}
 		const path = require('path');
 		if(files.length !== 1) { //单文件拖拽，避免引用修改错误
 			vscode.window.showErrorMessage('一次仅操作一个文件时可以使用本工具进行引用修改~');
@@ -37,11 +37,19 @@ export function activate(context: vscode.ExtensionContext) {
 
 	const init = vscode.commands.registerCommand('fe-file-rename.init',(params) => {
 		projectRootPath = getProjectDir(params.fsPath);
-		showMessageAndRefreshTree();
+		showOnOffMessage(isAutoReference);
+		showTypeMessage(currentTypes);
+		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
 
 	const refresh = vscode.commands.registerCommand('fe-file-rename.refresh',() => {
-		showMessageAndRefreshTree();
+		showTypeMessage(currentTypes);
+		fileMap = showProjectTree(projectRootPath, currentTypes);
+	});
+
+	const switchOnOff = vscode.commands.registerCommand('fe-file-rename.switchOnOff',(params) => {
+		isAutoReference = !isAutoReference;
+		showOnOffMessage(isAutoReference);
 	});
 
 	const switchType = vscode.commands.registerCommand('fe-file-rename.switchCheckType', async () => {
@@ -61,13 +69,15 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}
 		if(optTemp.length < 2){
-			vscode.window.showErrorMessage('你未选择文件夹或者文件名校验规则，校验规则未发生变化！');
+			showTypeMessage(currentTypes);
+			// vscode.window.showErrorMessage('你未选择文件夹或者文件名校验规则，校验规则未发生变化！');
 			optTemp = [];
 			return;
 		}
 		currentTypes = optTemp;
 		optTemp = [];
-		showMessageAndRefreshTree();
+		showTypeMessage(currentTypes);
+		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
 
 	const batchOp = vscode.commands.registerCommand('fe-file-rename.batchOp', async () => {
@@ -119,7 +129,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		fileMap = showProjectTree(projectRootPath, currentTypes);
 	});
-	context.subscriptions.push(...[init, switchType, batchOp, refresh]);
+	context.subscriptions.push(...[init, switchOnOff, switchType, batchOp, refresh]);
 }
 
 export function deactivate() {}
