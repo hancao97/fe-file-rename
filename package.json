@@ -26,7 +26,7 @@
 			},
 			{
 				"command": "fe-file-rename.switchOnOff",
-				"title": "引用修改开关",
+				"title": "自动引用修改开关",
 				"icon": "resources/on-off.svg"
 			},
 			{
