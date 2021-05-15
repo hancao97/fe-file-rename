@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { changeReferenceSync } from 'fe-mv/lib/move';
 import { getProjectDir, showProjectTree, showTypeMessage, showOnOffMessage, formatFileName, getSwitchType, checkOperable } from './handlers/handlers';
 import { DEFAULT_TYPES } from './configs/configs';
+import { request } from 'node:http';
 
 export function activate(context: vscode.ExtensionContext) {
 	let currentTypes:Array<any> = DEFAULT_TYPES;
@@ -25,6 +26,10 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 		const oldPath = path.normalize(files[0].oldUri.fsPath);
 		const newPath = path.normalize(files[0].newUri.fsPath);
+		if(!fileMap.get(oldPath)){
+			vscode.window.showErrorMessage('你所操作的文件不在当前读取的前端目录中,未进行引用修改~');
+			return;
+		}
 		const operable = checkOperable(oldPath, newPath);
 		if( operable ){
 			changeReferenceSync(oldPath, newPath, projectRootPath);
@@ -115,6 +120,10 @@ export function activate(context: vscode.ExtensionContext) {
 		for(const operateItem of operator) {
 			const normativeName = formatFileName(operateItem.name, operateItem.type, operateItem.type === 'dir' ? currentTypes[0] : currentTypes[1]);
 			const newPath = path.join(operateItem.path, '..', normativeName);
+			if(fs.existsSync(newPath)){
+				vscode.window.showErrorMessage(`修改后会出现文件路径冲突,未做修改，路径为：${operateItem.path.replace(projectRootPath,'')}`);
+				continue;
+			}
 			const operable = checkOperable(operateItem.path, newPath);
 			if( operable ){
 				changeReferenceSync(operateItem.path, newPath, projectRootPath);
