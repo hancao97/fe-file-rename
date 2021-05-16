@@ -2,7 +2,7 @@
 	"name": "fe-file-rename",
 	"displayName": "fe-file-rename",
 	"description": "在前端项目中，可视化地移动（重命名）文件/文件夹，同时更新引用。",
-	"version": "0.0.4",
+	"version": "0.0.5",
 	"icon": "resources/hancao.jpg",
 	"publisher": "hancao97",
 	"engines": {
